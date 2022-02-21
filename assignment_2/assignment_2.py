@@ -11,40 +11,121 @@ test_arr_30 = [28, 27, 26, 25, 24, 22, 21, 20, 19, 18, 16, 13, 12, 9, 5, 1, 2, 3
 
 test_arr_50 = [38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 1, 8, 29, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39]
 
-def find_min(test_arr):
+def find_min():
+    arr_dict = {}
+    
     i = 0
-    n = len(test_arr)-1
-    m = ((n-i)//2) + i
+    n = int(input()) - 1
+
+    def is_min(index):
+        x = 0
+
+        if index in arr_dict:
+            x = arr_dict[index]
+        else:
+            x = int(input("query " + str(index)))
+            arr_dict[index] = x
+        
+        x_minus_1 = 0
+        if index - 1 >= 0:
+            if (index - 1) in arr_dict:
+                x_minus_1 = arr_dict[index - 1]
+            else:
+                x_minus_1 = int(input("query " + str(index-1)))
+                arr_dict[index-1] = x_minus_1
+            
+        x_plus_1 = 0
+        if index + 1 <= n:
+            if (index + 1) in arr_dict:
+                x_plus_1 = arr_dict[index + 1]
+            else:
+                x_plus_1 = int(input("query " + str(index+1)))
+                arr_dict[index+1] = x_plus_1
+
+        x_beg = 0
+        if 0 in arr_dict:
+            x_beg = arr_dict[0]
+        else:
+            x_beg = int(input("query " + str(0)))
+            arr_dict[0] = x_beg
+
+        x_end = 0
+        if n in arr_dict:
+            x_end = arr_dict[n]
+        else:
+            x_end = int(input("query " + str(n)))
+            arr_dict[n] = x_end
+            
+        if index == 0:
+            return x < x_end and x < x_plus_1
+        elif index == n:
+            return x < x_minus_1 and x < x_beg
+        else:
+            return x < x_minus_1 and x < x_plus_1
     
-    i_val = test_arr[i]
-    n_val = test_arr[n]
-    m_val = test_arr[m]
+    counter = 0
     
-    min_val = min(i_val, m_val, n_val)
-    
-    if is_min(i):
-        return [i, temp_arr[i]]
-    elif is_min(m):
-        return [m, temp_arr[m]]
-    elif is_min(n):
-        return [n, temp_arr[n]]
-    
-    if min_val == i_val:
-        #interval is now [i,m]
-        n = m
-    elif min_val == m_val:
-        if #wdecreasing left:
+    while counter < n:
+        counter += 1
+        
+        m = ((n-i)//2) + i
+        
+        if i in arr_dict:
+            i_val = arr_dict[i]
+        else:
+            i_val = int(input("query " + str(i)))
+            arr_dict[i] = i_val
+        
+        if n in arr_dict:
+            n_val = arr_dict[n]
+        else:
+            n_val = int(input("query " + str(n)))
+            arr_dict[n] = n_val
+            
+        if m in arr_dict:
+            m_val = arr_dict[m]
+        else:
+            m_val = int(input("query " + str(m)))
+            arr_dict[m] = m_val
+        
+        min_val = min(i_val, m_val, n_val)
+        
+        if is_min(i):
+            return [i, arr_dict[i]]
+        elif is_min(m):
+            return [m, arr_dict[m]]
+        elif is_min(n):
+            return [n, arr_dict[n]]
+        
+        if min_val == i_val:
             #interval is now [i,m]
             n = m
-        elif #decreasing right:
-            ##interval is now [m,n]
-            i = m
-    elif min_val == n_val:
-        #interval is now [m,n]
-        i = m
-    
-    
-    
-    
+        elif min_val == m_val:
 
-find_min(test_arr_10)
+            l_decrease = 0
+            if (m-1) in arr_dict:
+                l_decrease = arr_dict[m-1]
+            else:
+                l_decrease = int(input("query " + str(m-1)))
+                arr_dict[m-1] = l_decrease
+                
+            r_decrease = 0
+            if (m + 1) in arr_dict:
+                r_decrease = arr_dict[m+1]
+            else:
+                r_decrease = int(input("query " + str(m+1)))
+                arr_dict[m+1] = r_decrease
+                
+            #decreasing left:
+            if l_decrease < arr_dict[m]:
+                #interval is now [i,m]
+                n = m
+            #decreasing right:
+            elif r_decrease < arr_dict[m]:
+                ##interval is now [m,n]
+                i = m
+        elif min_val == n_val:
+            #interval is now [m,n]
+            i = m
+    
+print("minimum " + str(find_min()[0]))
