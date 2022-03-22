@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../OpenSimplex2/_old/java" />
+      <root url="file://$PROJECT_DIR$/../OpenSimplex2/_old/java/legacy" />
+      <root url="file://$PROJECT_DIR$/../OpenSimplex2/_old/java/legacy_unoptimized" />
+      <root url="file://$PROJECT_DIR$/../OpenSimplex2/java" />
+    </SOURCES>
+  </library>
+</component>

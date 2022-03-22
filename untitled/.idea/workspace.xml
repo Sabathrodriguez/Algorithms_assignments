@@ -4,18 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="60778d2b-5afb-4c0f-8221-5d86ba72d964" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/description.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/project-template.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assignment_4.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/assignment_4/com/company/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Main.java" beforeDir="false" />
+    <list default="true" id="7ae9d568-2ee7-4d28-a35d-72aa288fb01c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/description.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/project-template.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../assignment_4/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/assignment_4.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/out/production/assignment_4/com/company/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assignment_4/src/com/company/Main.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../positiveIntervals/src/com/company/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../positiveIntervals/src/com/company/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,18 +26,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitSEFilterConfiguration">
-    <file-type-list>
-      <filtered-out-file-type name="LOCAL_BRANCH" />
-      <filtered-out-file-type name="REMOTE_BRANCH" />
-      <filtered-out-file-type name="TAG" />
-      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
-    </file-type-list>
-  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectId" id="25GlETkzxRfugwqUakMh2tPVuNQ" />
+  <component name="ProjectId" id="25TPGzml45A5lezadk0LFJl5ks6" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -99,12 +91,12 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="com.company.Main" />
-      <module name="assignment_4_backtracking" />
+      <module name="assignment_4_dp" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
@@ -113,13 +105,13 @@
       </method>
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
-      <module name="assignment_4_backtracking" />
+      <module name="assignment_4_dp" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="assignment_4_backtracking" />
+      <module name="assignment_4_dp" />
       <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -134,24 +126,13 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="60778d2b-5afb-4c0f-8221-5d86ba72d964" name="Changes" comment="" />
-      <created>1645161195074</created>
+      <changelist id="7ae9d568-2ee7-4d28-a35d-72aa288fb01c" name="Changes" comment="" />
+      <created>1645548014583</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1645161195074</updated>
+      <updated>1645548014583</updated>
     </task>
     <servers />
-  </component>
-  <component name="Vcs.Log.History.Properties">
-    <option name="COLUMN_ID_ORDER">
-      <list>
-        <option value="Default.Root" />
-        <option value="Default.Author" />
-        <option value="Default.Date" />
-        <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
-      </list>
-    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">

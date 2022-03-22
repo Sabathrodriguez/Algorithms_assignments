@@ -17,6 +17,7 @@ public class Main {
             ArrayList<Integer> temp = new ArrayList<>();
             for (int j = i + 1; j < arr.length-1; j++) {
                 s += arr[j];
+                //if positive interval
                 if (s + arr[j+1] >= 0) {
                     if (j == (i+1))
                         temp.add(arr[i]);
@@ -25,6 +26,7 @@ public class Main {
                     s += arr[j+1];
                     j = j + 1;
                 }
+                //if not positive interval
                 else {
                     i = j;
                     break;
