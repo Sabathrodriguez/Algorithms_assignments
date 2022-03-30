@@ -2,21 +2,105 @@ import java.util.*;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
 
-        //testing generate weights function
-        for (int[] A : generateWeights(1, 10, 1, 10, 1)) {
-            System.out.println(Arrays.toString(A));
-        }
-        //PASSED TEST: Works as expected, will return 2D array representing weighted undirected Graph
+		//get input
+		Scanner scanner = new Scanner(System.in);
+		int seed = scanner.nextInt();
+		int vertexCount = scanner.nextInt();
+		int minWeight = scanner.nextInt();
+        int maxWeight = scanner.nextInt();
+		int connectivity = scanner.nextInt();
+		String algorithm = scanner.next().trim();
+		int startVertex = 0;
+		
+		if (scanner.hasNextInt()) {
+			startVertex = scanner.nextInt();
+		}
 
+		int[][] Graph = generateWeights(seed, vertexCount, minWeight, maxWeight, connectivity);
 
-        
+		getMST(algorithm, startVertex, Graph);
+
+		scanner.close();
     }
 
-    public static int[][] getMST(String algorithm, int startVertex, int[][] Graph) {
-        //TODO: fill in
-        return new int[1][1];
+    public static List<Edge> getMST(String algorithm, int startVertex, int[][] Graph) {
+		List<Edge> mst = new ArrayList<>();
+		boolean[] marked = new boolean[Graph.length];
+		boolean[] allMarked = new boolean[Graph.length];
+		int vCount = 0;
+		int netWeight = 0;
+
+		if (algorithm.equals("Jarnik")) {
+			//Jarniks Algorithm
+			for (int i = 0; i < marked.length; i++) {
+				marked[i] = false;
+			}
+
+			for (int i = 0; i < allMarked.length; i++) {
+				allMarked[i] = true;
+			}
+
+			PriorityQueue<Edge> pq = new PriorityQueue<>();
+			marked[startVertex] = true;
+			for (int i = 0; i < Graph.length; i++) {
+				if (i != startVertex) {
+					if (Graph[startVertex][i] > 0) {
+						Edge newEdge = new Edge(startVertex, i, Graph[startVertex][i]);
+						pq.add(newEdge);
+					}
+				}
+			}
+
+			while (vCount < marked.length && !pq.isEmpty()) {
+				Edge eFromPQ = pq.remove();
+
+				if (! marked[eFromPQ.getStart()]) {
+					marked[eFromPQ.getStart()] = true;
+					vCount++;
+					for (int j = 0; j < Graph.length; j++) {
+						if (Graph[eFromPQ.getStart()][j] > 0) {
+							if (j != eFromPQ.getStart()) {
+								Edge newEdgeFrom = new Edge(eFromPQ.getStart(), j, Graph[eFromPQ.getStart()][j]);
+								Edge newEdgeTo = new Edge(j, eFromPQ.getStart(),Graph[eFromPQ.getStart()][j]);
+
+								pq.add(newEdgeFrom);
+								pq.add(newEdgeTo);
+							}
+						}
+					}
+					netWeight += eFromPQ.getWeight();
+					mst.add(eFromPQ);
+				}
+				if (! marked[eFromPQ.getEnd()]) {
+					marked[eFromPQ.getEnd()] = true;
+					vCount++;
+					for (int j = 0; j < Graph.length; j++) {
+						if (Graph[eFromPQ.getEnd()][j] > 0) {
+							if (j != eFromPQ.getEnd()) {
+								Edge newEdgeFrom = new Edge(eFromPQ.getEnd(), j, Graph[eFromPQ.getEnd()][j]);
+								Edge newEdgeTo = new Edge(j, eFromPQ.getEnd(),Graph[eFromPQ.getEnd()][j]);
+
+								pq.add(newEdgeFrom);
+								pq.add(newEdgeTo);
+							}
+						}
+					}
+					netWeight += eFromPQ.getWeight();
+					mst.add(eFromPQ);
+				}
+			}
+		} else if (algorithm.equals("Kruskal")) {
+
+		} else if (algorithm.equals("Boruvka")) {
+			
+		}
+		System.out.println(netWeight);
+		System.out.println(mst.size());
+		for (Edge e : mst) {
+			System.out.println(e);
+		}
+        return mst;
     }
 
     /**
@@ -120,4 +204,62 @@ public class App {
 		
 		return weights;
 	}
+}
+
+class Edge implements Comparable<Edge> {
+	private int start;
+	private int end;
+	private int weight;
+
+	public Edge(int start, int end, int weight) {
+		this.start = start;
+		this.end = end;
+		this.weight = weight;
+	}
+
+	public int getStart() {
+		return this.start;
+	}
+
+	public int getEnd() {
+		return this.end;
+	}
+
+	public int getWeight() {
+		return this.weight;
+	}
+
+	@Override
+	public int compareTo(Edge e) {
+
+		if (e.getWeight() < this.getWeight()) {
+			return 1;
+		} else if (e.getWeight() > this.getWeight()) {
+			return -1;
+		} else if (Math.min(this.getEnd(), this.getStart()) > (Math.min(e.getEnd(), e.getStart()))) {
+			return 1;
+		} else if (Math.min(this.getEnd(), this.getStart()) < (Math.min(e.getEnd(), e.getStart()))) {
+			return -1;
+		} else if (Math.max(this.getEnd(), this.getStart()) > (Math.max(e.getEnd(), e.getStart()))) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+	public boolean equals(Object o1) {
+		return this.compareTo((Edge) o1) == 0;
+	}
+
+	@Override
+	public String toString() {
+		if (this.getEnd() > this.getStart()) {
+			return this.getStart() + " " + this.getEnd();
+		} else {
+			return this.getEnd() + " " + this.getStart();
+		}
+		
+	}
+
 }
