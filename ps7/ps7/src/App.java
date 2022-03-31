@@ -27,73 +27,16 @@ public class App {
     public static List<Edge> getMST(String algorithm, int startVertex, int[][] Graph) {
 		List<Edge> mst = new ArrayList<>();
 		boolean[] marked = new boolean[Graph.length];
-		boolean[] allMarked = new boolean[Graph.length];
-		int vCount = 0;
 		int netWeight = 0;
 
 		if (algorithm.equals("Jarnik")) {
 			//Jarniks Algorithm
-			for (int i = 0; i < marked.length; i++) {
-				marked[i] = false;
-			}
-
-			for (int i = 0; i < allMarked.length; i++) {
-				allMarked[i] = true;
-			}
-
-			PriorityQueue<Edge> pq = new PriorityQueue<>();
-			marked[startVertex] = true;
-			for (int i = 0; i < Graph.length; i++) {
-				if (i != startVertex) {
-					if (Graph[startVertex][i] > 0) {
-						Edge newEdge = new Edge(startVertex, i, Graph[startVertex][i]);
-						pq.add(newEdge);
-					}
-				}
-			}
-
-			while (vCount < marked.length && !pq.isEmpty()) {
-				Edge eFromPQ = pq.remove();
-
-				if (! marked[eFromPQ.getStart()]) {
-					marked[eFromPQ.getStart()] = true;
-					vCount++;
-					for (int j = 0; j < Graph.length; j++) {
-						if (Graph[eFromPQ.getStart()][j] > 0) {
-							if (j != eFromPQ.getStart()) {
-								Edge newEdgeFrom = new Edge(eFromPQ.getStart(), j, Graph[eFromPQ.getStart()][j]);
-								Edge newEdgeTo = new Edge(j, eFromPQ.getStart(),Graph[eFromPQ.getStart()][j]);
-
-								pq.add(newEdgeFrom);
-								pq.add(newEdgeTo);
-							}
-						}
-					}
-					netWeight += eFromPQ.getWeight();
-					mst.add(eFromPQ);
-				}
-				if (! marked[eFromPQ.getEnd()]) {
-					marked[eFromPQ.getEnd()] = true;
-					vCount++;
-					for (int j = 0; j < Graph.length; j++) {
-						if (Graph[eFromPQ.getEnd()][j] > 0) {
-							if (j != eFromPQ.getEnd()) {
-								Edge newEdgeFrom = new Edge(eFromPQ.getEnd(), j, Graph[eFromPQ.getEnd()][j]);
-								Edge newEdgeTo = new Edge(j, eFromPQ.getEnd(),Graph[eFromPQ.getEnd()][j]);
-
-								pq.add(newEdgeFrom);
-								pq.add(newEdgeTo);
-							}
-						}
-					}
-					netWeight += eFromPQ.getWeight();
-					mst.add(eFromPQ);
-				}
-			}
+			netWeight = jarniksAlgo(marked, startVertex, Graph, mst);
 		} else if (algorithm.equals("Kruskal")) {
-
-		} else if (algorithm.equals("Boruvka")) {
 			
+		} else if (algorithm.equals("Boruvka")) {
+			//Boruvkas Algorithm
+			netWeight = boruvkasAlgo(mst, Graph.length, Graph);
 		}
 		System.out.println(netWeight);
 		System.out.println(mst.size());
@@ -102,6 +45,147 @@ public class App {
 		}
         return mst;
     }
+
+	public static int boruvkasAlgo(List<Edge> mst, int vertexCount, int[][] Graph) {
+		int netWight = 0;
+		List<Edge> E = new ArrayList<>();
+		int count = countAndLabel(mst, vertexCount, Graph, E);
+
+		while (count > 1) {
+			System.out.println("here");
+			addAllSafeEdges(E, mst, count);
+			count = countAndLabel(mst, vertexCount, Graph, E);
+		}
+
+		return netWight;
+	}
+
+	public static void addAllSafeEdges(List<Edge> E, List<Edge> F, int count) {
+		Edge[] safe = new Edge[count];
+
+		for (Edge e : E) {
+			if (e.getStart() != e.getEnd()) {
+				if (safe[e.getStart()] == null || e.getWeight() < safe[e.getStart()].getWeight()) {
+					safe[e.getStart()] = e;
+				}
+				if (safe[e.getEnd()] == null || e.getWeight() < safe[e.getEnd()].getWeight()) {
+					safe[e.getEnd()] = e;
+				}
+			}
+		}
+		for (int i = 0; i < count; i++) {
+			if (safe[i] != null) {
+				F.add(safe[i]);
+			}
+		}
+	}
+
+	public static int countAndLabel(List<Edge> G, int vertexCount, int[][] Graph, List<Edge> E) {
+		int count = 0;
+		boolean[] marked = new boolean[vertexCount];
+		// List<Edge> E = new ArrayList<>();
+
+		for (int i = 0; i < vertexCount; i++) {
+			marked[i] = false;
+		}
+
+		for (int i = 0; i < vertexCount; i++) {
+			if (!marked[i]) {
+				count += 1;
+				labelOne(i, count, E, marked, Graph);
+			}
+		}
+
+		return count;
+	}
+
+	public static void labelOne(int i, int count, List<Edge> E, boolean[] marked, int[][] Graph) {
+		Stack<Integer> stack = new Stack<>();
+		stack.push(i);
+
+		while (!stack.isEmpty()) {
+			int v = stack.pop();
+
+			if (!marked[i]) {
+				marked[i] = true;
+
+				Edge newEdge = new Edge(i, v, Graph[i][v]);
+				
+				newEdge.setEndComp(count);
+				newEdge.setStartComp(count);
+
+				E.add(newEdge);
+
+				for (int e = 0; e < Graph[i].length; e++) {
+					if (Graph[i][e] > 0) {
+						if (i != e) {
+							stack.push(e);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static int jarniksAlgo(boolean[] marked, int startVertex, int[][] Graph, List<Edge> mst) {
+		int vCount = 0;
+		int netWeight = 0;
+
+		for (int i = 0; i < marked.length; i++) {
+			marked[i] = false;
+		}
+
+		PriorityQueue<Edge> pq = new PriorityQueue<>();
+		marked[startVertex] = true;
+		for (int i = 0; i < Graph.length; i++) {
+			if (i != startVertex) {
+				if (Graph[startVertex][i] > 0) {
+					Edge newEdge = new Edge(startVertex, i, Graph[startVertex][i]);
+					pq.add(newEdge);
+				}
+			}
+		}
+
+		while (vCount < marked.length && !pq.isEmpty()) {
+			Edge eFromPQ = pq.remove();
+
+			if (! marked[eFromPQ.getStart()]) {
+				marked[eFromPQ.getStart()] = true;
+				vCount++;
+				for (int j = 0; j < Graph.length; j++) {
+					if (Graph[eFromPQ.getStart()][j] > 0) {
+						if (j != eFromPQ.getStart()) {
+							Edge newEdgeFrom = new Edge(eFromPQ.getStart(), j, Graph[eFromPQ.getStart()][j]);
+							Edge newEdgeTo = new Edge(j, eFromPQ.getStart(),Graph[eFromPQ.getStart()][j]);
+
+							pq.add(newEdgeFrom);
+							pq.add(newEdgeTo);
+						}
+					}
+				}
+				netWeight += eFromPQ.getWeight();
+				mst.add(eFromPQ);
+			}
+			if (! marked[eFromPQ.getEnd()]) {
+				marked[eFromPQ.getEnd()] = true;
+				vCount++;
+				for (int j = 0; j < Graph.length; j++) {
+					if (Graph[eFromPQ.getEnd()][j] > 0) {
+						if (j != eFromPQ.getEnd()) {
+							Edge newEdgeFrom = new Edge(eFromPQ.getEnd(), j, Graph[eFromPQ.getEnd()][j]);
+							Edge newEdgeTo = new Edge(j, eFromPQ.getEnd(),Graph[eFromPQ.getEnd()][j]);
+
+							pq.add(newEdgeFrom);
+							pq.add(newEdgeTo);
+						}
+					}
+				}
+				netWeight += eFromPQ.getWeight();
+				mst.add(eFromPQ);
+			}
+		}
+		return netWeight;
+	}
 
     /**
 	 * Prints out an adjacency matrix.  Note that axis are labeled 'from' and 'to',
@@ -210,11 +294,29 @@ class Edge implements Comparable<Edge> {
 	private int start;
 	private int end;
 	private int weight;
+	private int startComp;
+	private int endComp;
 
 	public Edge(int start, int end, int weight) {
 		this.start = start;
 		this.end = end;
 		this.weight = weight;
+	}
+
+	public int getStartComp() {
+		return this.startComp;
+	}
+
+	public int getEndComp() {
+		return this.endComp;
+	}
+
+	public void setEndComp(int i) {
+		this.endComp = i;
+	}
+
+	public void setStartComp(int i) {
+		this.startComp = i;
 	}
 
 	public int getStart() {
