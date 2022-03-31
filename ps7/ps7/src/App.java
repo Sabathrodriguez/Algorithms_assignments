@@ -12,16 +12,19 @@ public class App {
 		int connectivity = scanner.nextInt();
 		String algorithm = scanner.next().trim();
 		int startVertex = 0;
-		
-		if (scanner.hasNextInt()) {
-			startVertex = scanner.nextInt();
-		}
+		if (algorithm.equals("Jarnik")) {
+			System.out.println("hi");
+			startVertex = Integer.parseInt(scanner.nextLine().trim());
+		} 
+
+		scanner.close();
 
 		int[][] Graph = generateWeights(seed, vertexCount, minWeight, maxWeight, connectivity);
 
+		// printWeights(Graph, 4, false);
+
 		getMST(algorithm, startVertex, Graph);
 
-		scanner.close();
     }
 
     public static List<Edge> getMST(String algorithm, int startVertex, int[][] Graph) {
@@ -50,9 +53,9 @@ public class App {
 		int netWight = 0;
 		List<Edge> E = new ArrayList<>();
 		int count = countAndLabel(mst, vertexCount, Graph, E);
+		System.out.println("count: " + count);
 
 		while (count > 1) {
-			System.out.println("here");
 			addAllSafeEdges(E, mst, count);
 			count = countAndLabel(mst, vertexCount, Graph, E);
 		}
@@ -64,12 +67,12 @@ public class App {
 		Edge[] safe = new Edge[count];
 
 		for (Edge e : E) {
-			if (e.getStart() != e.getEnd()) {
-				if (safe[e.getStart()] == null || e.getWeight() < safe[e.getStart()].getWeight()) {
-					safe[e.getStart()] = e;
+			if (e.getStartComp() != e.getEndComp()) {
+				if (safe[e.getStartComp()] == null || e.getWeight() < safe[e.getStartComp()].getWeight()) {
+					safe[e.getStartComp()] = e;
 				}
-				if (safe[e.getEnd()] == null || e.getWeight() < safe[e.getEnd()].getWeight()) {
-					safe[e.getEnd()] = e;
+				if (safe[e.getEndComp()] == null || e.getWeight() < safe[e.getEndComp()].getWeight()) {
+					safe[e.getEndComp()] = e;
 				}
 			}
 		}
@@ -80,17 +83,16 @@ public class App {
 		}
 	}
 
-	public static int countAndLabel(List<Edge> G, int vertexCount, int[][] Graph, List<Edge> E) {
+	public static int countAndLabel(List<Edge> F, int vertexCount, int[][] Graph, List<Edge> E) {
 		int count = 0;
 		boolean[] marked = new boolean[vertexCount];
-		// List<Edge> E = new ArrayList<>();
 
 		for (int i = 0; i < vertexCount; i++) {
-			marked[i] = false;
-		}
-
-		for (int i = 0; i < vertexCount; i++) {
+			//i is the vertex
+			
+			//is vertex i marked?
 			if (!marked[i]) {
+				//if it's not marked, call labelOne function
 				count += 1;
 				labelOne(i, count, E, marked, Graph);
 			}
@@ -99,6 +101,7 @@ public class App {
 		return count;
 	}
 
+	//labelOne function finds all vertices in that component
 	public static void labelOne(int i, int count, List<Edge> E, boolean[] marked, int[][] Graph) {
 		Stack<Integer> stack = new Stack<>();
 		stack.push(i);
@@ -125,6 +128,8 @@ public class App {
 				}
 			}
 		}
+		for (Edge e : E)
+			System.out.println("start endpoint comp: " + e.getStartComp() + ", end endpoint comp: " + e.getEndComp());
 	}
 
 	public static int jarniksAlgo(boolean[] marked, int startVertex, int[][] Graph, List<Edge> mst) {
