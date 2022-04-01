@@ -13,7 +13,6 @@ public class App {
 		String algorithm = scanner.next().trim();
 		int startVertex = 0;
 		if (algorithm.equals("Jarnik")) {
-			System.out.println("hi");
 			startVertex = Integer.parseInt(scanner.nextLine().trim());
 		} 
 
@@ -39,6 +38,7 @@ public class App {
 			
 		} else if (algorithm.equals("Boruvka")) {
 			//Boruvkas Algorithm
+			List<Edge> E = new ArrayList<>();
 			netWeight = boruvkasAlgo(mst, Graph.length, Graph);
 		}
 		System.out.println(netWeight);
@@ -52,49 +52,58 @@ public class App {
 	public static int boruvkasAlgo(List<Edge> mst, int vertexCount, int[][] Graph) {
 		int netWight = 0;
 		List<Edge> E = new ArrayList<>();
-		int count = countAndLabel(mst, vertexCount, Graph, E);
-		System.out.println("count: " + count);
+		int[] label = new int[vertexCount];
+		int count = countAndLabel(vertexCount, Graph, E, label);		
 
 		while (count > 1) {
-			addAllSafeEdges(E, mst, count);
-			count = countAndLabel(mst, vertexCount, Graph, E);
+			addAllSafeEdges(E, mst, count, Graph, label);
+			count = countAndLabel(vertexCount, Graph, E, label);
 		}
 
+		for (Edge e : mst) {
+			netWight += e.getWeight();
+		}
 		return netWight;
 	}
 
-	public static void addAllSafeEdges(List<Edge> E, List<Edge> F, int count) {
+	public static void addAllSafeEdges(List<Edge> E, List<Edge> F, int count, int[][] G, int[] label) {
 		Edge[] safe = new Edge[count];
 
-		for (Edge e : E) {
-			if (e.getStartComp() != e.getEndComp()) {
-				if (safe[e.getStartComp()] == null || e.getWeight() < safe[e.getStartComp()].getWeight()) {
-					safe[e.getStartComp()] = e;
-				}
-				if (safe[e.getEndComp()] == null || e.getWeight() < safe[e.getEndComp()].getWeight()) {
-					safe[e.getEndComp()] = e;
+		for (int i = 0; i < G.length; i++) {
+			for (int j = 0; j < G.length; j++) {
+				if (label[i] != label[j]) {
+					if (safe[label[i]-1] == null 
+					|| G[i][j] < safe[label[i]-1].getWeight()) {
+						if (G[i][j] > 0)
+							safe[label[i]-1] = new Edge(i, j, G[i][j]);
+					}
+					if (safe[label[j]-1] == null 
+					|| G[i][j] < safe[label[j]-1].getWeight()) {
+						if (G[i][j] > 0)
+							safe[label[j]-1] = new Edge(j, i, G[j][i]);
+					}
 				}
 			}
 		}
 		for (int i = 0; i < count; i++) {
-			if (safe[i] != null) {
-				F.add(safe[i]);
-			}
+				if (safe[i] != null) {
+					if (!F.contains(safe[i])) {
+						F.add(safe[i]);
+						E.add(safe[i]);
+					}
+				}
 		}
 	}
 
-	public static int countAndLabel(List<Edge> F, int vertexCount, int[][] Graph, List<Edge> E) {
+	public static int countAndLabel(int vertexCount, int[][] Graph, List<Edge> E, int[] label) {
 		int count = 0;
 		boolean[] marked = new boolean[vertexCount];
 
 		for (int i = 0; i < vertexCount; i++) {
-			//i is the vertex
-			
-			//is vertex i marked?
+
 			if (!marked[i]) {
-				//if it's not marked, call labelOne function
 				count += 1;
-				labelOne(i, count, E, marked, Graph);
+				labelOne(i, count, E, marked, label);
 			}
 		}
 
@@ -102,34 +111,29 @@ public class App {
 	}
 
 	//labelOne function finds all vertices in that component
-	public static void labelOne(int i, int count, List<Edge> E, boolean[] marked, int[][] Graph) {
+	public static void labelOne(int i, int count, List<Edge> E, boolean[] marked, int[] label) {
 		Stack<Integer> stack = new Stack<>();
 		stack.push(i);
 
 		while (!stack.isEmpty()) {
-			int v = stack.pop();
+			int j = stack.pop();
 
-			if (!marked[i]) {
-				marked[i] = true;
+			if (!marked[j]) {
+				marked[j] = true;
 
-				Edge newEdge = new Edge(i, v, Graph[i][v]);
-				
-				newEdge.setEndComp(count);
-				newEdge.setStartComp(count);
+				label[j] = count;
 
-				E.add(newEdge);
-
-				for (int e = 0; e < Graph[i].length; e++) {
-					if (Graph[i][e] > 0) {
-						if (i != e) {
-							stack.push(e);
-						}
+				for (Edge edge : E) {
+					if (edge.getStart() == j) {
+						stack.push(edge.getEnd());
+					} else if (edge.getEnd() == j) {
+						stack.push(edge.getStart());
 					}
+					 
 				}
+
 			}
 		}
-		for (Edge e : E)
-			System.out.println("start endpoint comp: " + e.getStartComp() + ", end endpoint comp: " + e.getEndComp());
 	}
 
 	public static int jarniksAlgo(boolean[] marked, int startVertex, int[][] Graph, List<Edge> mst) {
@@ -299,29 +303,11 @@ class Edge implements Comparable<Edge> {
 	private int start;
 	private int end;
 	private int weight;
-	private int startComp;
-	private int endComp;
 
 	public Edge(int start, int end, int weight) {
 		this.start = start;
 		this.end = end;
 		this.weight = weight;
-	}
-
-	public int getStartComp() {
-		return this.startComp;
-	}
-
-	public int getEndComp() {
-		return this.endComp;
-	}
-
-	public void setEndComp(int i) {
-		this.endComp = i;
-	}
-
-	public void setStartComp(int i) {
-		this.startComp = i;
 	}
 
 	public int getStart() {
