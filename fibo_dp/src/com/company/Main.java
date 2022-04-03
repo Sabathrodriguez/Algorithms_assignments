@@ -25,19 +25,13 @@ public class Main {
 
     //bottom up
     public static int fib_dp(int k) {
-//        int[] arr = new int[2];
-//        arr[0] = 0;
-//        arr[1] = 1;
         int a = 0;
         int b = 1;
 
         for (int i = 2; i <= k; i++) {
-//            int temp = arr[0] + arr[1];
             int temp = a + b;
             a = b;
             b = temp;
-//            arr[0] = arr[1];
-//            arr[1] = temp;
         }
 
         return b;

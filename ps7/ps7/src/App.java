@@ -19,6 +19,10 @@ public class App {
 		scanner.close();
 
 		int[][] Graph = generateWeights(seed, vertexCount, minWeight, maxWeight, connectivity);
+		// Graph[8][4] = 96;
+		// Graph[4][8] = 96;
+		// Graph[6][3] = 1;
+		// Graph[3][6] = 1;
 
 		// printWeights(Graph, 4, false);
 
@@ -35,7 +39,8 @@ public class App {
 			//Jarniks Algorithm
 			netWeight = jarniksAlgo(marked, startVertex, Graph, mst);
 		} else if (algorithm.equals("Kruskal")) {
-			
+			//Kruskals Algorithm
+			netWeight = kruskalsAlgorithm(mst, Graph);
 		} else if (algorithm.equals("Boruvka")) {
 			//Boruvkas Algorithm
 			List<Edge> E = new ArrayList<>();
@@ -49,15 +54,93 @@ public class App {
         return mst;
     }
 
+	public static int kruskalsAlgorithm(List<Edge> mst, int[][] Graph) {
+		int netWeight = 0;
+		List<Edge> E = new ArrayList<>();
+		boolean[][] vertex = new boolean[Graph.length][Graph.length];
+		//vertices and reachability from those vertices
+		Map<Integer, Set<Integer>> set = new TreeMap<>();
+		//vertices and what components they are in
+		//vertices 1 and 3 are in component 1, etc...
+		List<TreeSet<Integer>> lst = new ArrayList<>();
+
+		for (int i = 0; i < Graph.length; i++) {
+			lst.add(new TreeSet<>());
+		}
+
+		for (int i = 0; i < Graph.length; i++) {
+			for (int j = 0; j < Graph.length; j++) {
+				if (i != j && Graph[i][j] > 0 && !vertex[i][j] && !vertex[j][i]) {
+					vertex[i][j] = true;
+					vertex[j][i] = true;
+					Edge newEdge = new Edge(i, j, Graph[i][j]);
+					E.add(newEdge);
+				}
+			}
+		}
+
+		Collections.sort(E);
+
+		// System.out.println(E.size());
+
+		for (int i = 0; i < Graph.length; i++) {
+			lst.get(i).add(i);
+			set.put(i, lst.get(i));
+			// set.put(i, new TreeSet<>(Arrays.asList(i)));
+		}
+
+		for (int i = 0; i < E.size(); i++) {
+			Edge uv = E.get(i);
+
+			//check that only 1 endpoint is in the graph G
+			//if both endpoints aren't in the same component
+			// if (! set.get(uv.getStart()).equals(set.get(uv.getEnd()))) {
+			
+			//if both endpoints aren't in the same component
+			if (!set.get(uv.getStart()).equals(set.get(uv.getEnd()))) {
+
+				//get all vertices that uv.getStart() can reach
+				Set<Integer> temp1 = new TreeSet<>(set.get(uv.getStart()));
+				//iterate through all the vertices that uv.getStart() can reach and add all the vertices that uv.getEnd() can reach
+				//essentially combining 2 or more components into 1	
+				for (int v : temp1) {
+					//add all uv.end to uv.start
+					set.get(v).addAll(set.get(uv.getEnd()));
+					//add all uv.start to uv.end
+					set.get(uv.getEnd()).addAll(set.get(v));
+				}
+
+				//get all vertices that uv.getEnd() can reach
+				Set<Integer> temp3 = new TreeSet<>(set.get(uv.getEnd()));
+				//iterate through all the vertices that uv.getEnd() can reach and add all the vertices that uv.getStart() can reach
+				for (int v : temp3) {
+					//add all uv.end to uv.start
+					set.get(uv.getStart()).addAll(set.get(v));
+					//add all uv.start to uv.end
+					set.get(v).addAll(set.get(uv.getStart()));
+				}
+
+				
+				mst.add(uv);
+				netWeight += uv.getWeight();
+				
+			}
+			System.out.println(set);
+			// System.out.println(set);
+		}
+
+		return netWeight;
+	}
+
 	public static int boruvkasAlgo(List<Edge> mst, int vertexCount, int[][] Graph) {
 		int netWight = 0;
 		List<Edge> E = new ArrayList<>();
 		int[] label = new int[vertexCount];
-		int count = countAndLabel(vertexCount, Graph, E, label);		
+		int count = countAndLabel(vertexCount, E, label);		
 
 		while (count > 1) {
 			addAllSafeEdges(E, mst, count, Graph, label);
-			count = countAndLabel(vertexCount, Graph, E, label);
+			count = countAndLabel(vertexCount, E, label);
 		}
 
 		for (Edge e : mst) {
@@ -71,31 +154,30 @@ public class App {
 
 		for (int i = 0; i < G.length; i++) {
 			for (int j = 0; j < G.length; j++) {
-				if (label[i] != label[j]) {
+				if (label[i] != label[j] && G[i][j] > 0) {
 					if (safe[label[i]-1] == null 
 					|| G[i][j] < safe[label[i]-1].getWeight()) {
-						if (G[i][j] > 0)
-							safe[label[i]-1] = new Edge(i, j, G[i][j]);
+						safe[label[i]-1] = new Edge(i, j, G[i][j]);
 					}
 					if (safe[label[j]-1] == null 
 					|| G[i][j] < safe[label[j]-1].getWeight()) {
-						if (G[i][j] > 0)
-							safe[label[j]-1] = new Edge(j, i, G[j][i]);
+						safe[label[j]-1] = new Edge(j, i, G[j][i]);
 					}
 				}
 			}
 		}
 		for (int i = 0; i < count; i++) {
-				if (safe[i] != null) {
-					if (!F.contains(safe[i])) {
-						F.add(safe[i]);
-						E.add(safe[i]);
-					}
+			if (safe[i] != null) {
+				//TODO: potential problem
+				if (!F.contains(safe[i])) {
+					F.add(safe[i]);
+					E.add(safe[i]);
 				}
+			}
 		}
 	}
 
-	public static int countAndLabel(int vertexCount, int[][] Graph, List<Edge> E, int[] label) {
+	public static int countAndLabel(int vertexCount, List<Edge> E, int[] label) {
 		int count = 0;
 		boolean[] marked = new boolean[vertexCount];
 
@@ -122,6 +204,7 @@ public class App {
 				marked[j] = true;
 
 				label[j] = count;
+
 
 				for (Edge edge : E) {
 					if (edge.getStart() == j) {
@@ -335,6 +418,8 @@ class Edge implements Comparable<Edge> {
 			return -1;
 		} else if (Math.max(this.getEnd(), this.getStart()) > (Math.max(e.getEnd(), e.getStart()))) {
 			return 1;
+		} else if ((Math.max(this.getEnd(), this.getStart()) < (Math.max(e.getEnd(), e.getStart())))) {
+			return -1;
 		} else {
 			return 0;
 		}

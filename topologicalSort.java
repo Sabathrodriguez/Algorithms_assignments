@@ -1,28 +1,36 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 class topologicalSort {
     public static void main(String[] args) {        
         Map<String, Vertex> G = new HashMap<String, Vertex>();
         
-        List<Vertex> vertexList = createVertexList();
+//        try {
+            List<Vertex> vertexList = createVertexList();
         
-        for (Vertex v : vertexList) {
-            G.put(v.getName(), v);
-        }
-                        
-//        System.out.println(Arrays.toString(topologicalSort(G)));
+            
+            for (Vertex v : vertexList) {
+                G.put(v.getName(), v);
+            }
+            
+            String[] arr = topologicalSort(G);
+            
+            for (Vertex v : G.values()) {
+                if (!v.getStatus().equals("finished")) {
+                    System.out.println("Unsolvable");
+                    return;
+                }
+            }
+            for (String s : arr) {
+                System.out.println(s);
+            }
+            
+//        }
+//        catch (NullPointerException e) {
+//            System.out.println("Unsolvable");
+//        }
     }
     
     public static List<Vertex> createVertexList() {
-        List<Vertex> vertexList = new ArrayList<>();
         /*
          4
          Castle Sweetroll
@@ -37,131 +45,187 @@ class topologicalSort {
          Dragon
          */
         Scanner scanner = new Scanner(System.in);
-        //  u     , v
-        Map<String, ArrayList<String>> player1 = new TreeMap<>();
-        Map<String, ArrayList<String>> player2 = new TreeMap<>();
-        ArrayList<String> sharedQuests = new ArrayList<>();
         
-        int numVertices = scanner.nextInt();
+        ArrayList<ArrayList<String>> g = new ArrayList<>();
+        ArrayList<ArrayList<String>> g1 = new ArrayList<>();
         
-        //player 1
-        while (numVertices-- > 0) {
-            String k = scanner.next().trim() + "-1";
-            String v = scanner.next().trim() + "-1";
+        Map<String, String> player1 = new HashMap<>();
+        Map<String, String> player2 = new HashMap<>();
+        
+        HashSet<String> sharedQuests = new HashSet<>();
+        
+        HashSet<String> vertexList = new HashSet<>();
+        
+        int num = scanner.nextInt();
+        
+        while (num-- > 0) {
+            String u = scanner.next().trim();
+            String v = scanner.next().trim();
             
-            Vertex a = new Vertex(k);
-            Vertex b = new Vertex(v);
+            g.add(new ArrayList<>(Arrays.asList(u, v)));
             
-            if (getVertex(vertexList, a.getName()) != null) {
-                getVertex(vertexList, a.getName()).addToList(b);
-            } else {
-                vertexList.add(a);
-                a.addToList(b);
+            if (!player1.containsKey(u)) {
+                player1.put(u, u);
             }
-            if (getVertex(vertexList, b.getName()) != null) {
-                getVertex(vertexList, b.getName()).addFromList(a);
-            } else {
-                vertexList.add(b);
-                b.addFromList(a);
+            if (!player1.containsKey(v)) {
+                player1.put(v, v);
             }
         }
-        numVertices = scanner.nextInt();
         
-        //player 2
-        while (numVertices-- > 0) {
-            String k = scanner.next().trim() + "-2";
-            String v = scanner.next().trim() + "-2";
+        num = scanner.nextInt();
+        
+        while (num-- > 0) {
+            String u = scanner.next().trim();
+            String v = scanner.next().trim();
             
-            Vertex a = new Vertex(k);
-            Vertex b = new Vertex(v);
-            
-            if (getVertex(vertexList, a.getName()) != null) {
-                getVertex(vertexList, a.getName()).addToList(b);
-            } else {
-                vertexList.add(a);
-                a.addToList(b);
+            g1.add(new ArrayList<>(Arrays.asList(u, v)));
+
+            if (!player2.containsKey(u)) {
+                player2.put(u, u);
             }
-            if (getVertex(vertexList, b.getName()) != null) {
-                getVertex(vertexList, b.getName()).addFromList(a);
-            } else {
-                vertexList.add(b);
-                b.addFromList(a);
+            if (!player2.containsKey(v)) {
+                player2.put(v, v);
             }
         }
         
         if (scanner.hasNextInt()) {
-            int numSharedVertices = scanner.nextInt();
-            
-            while (numSharedVertices-- > 0) {
-                String shared = scanner.next().trim();
-                sharedQuests.add(shared);
+            num = scanner.nextInt();
+            while (num-- > 0) {
+                sharedQuests.add(scanner.next().trim());
             }
         }
         
-        //link shared quests
-        for (int i = 0; i < sharedQuests.size(); i++) {
+        for (ArrayList<String> h : g) {
+            if (! sharedQuests.contains(h.get(0))) {
+                String str = player1.get(h.get(0));
+                if (!str.contains("-1"))
+                    player1.replace(h.get(0), str + "-1");
+            }
+            if (! sharedQuests.contains(h.get(1))) {
+                String str = player1.get(h.get(1));
+                if (!str.contains("-1"))
+                    player1.replace(h.get(1), str + "-1");
+            }
+        }
+        
+        for (ArrayList<String> h : g1) {
+            if (! sharedQuests.contains(h.get(0))) {
+                String str = player2.get(h.get(0));
+                if (!str.contains("-2"))
+                    player2.replace(h.get(0), str + "-2");
+            }
+            if (! sharedQuests.contains(h.get(1))) {
+                String str = player2.get(h.get(1));
+                if (!str.contains("-2"))
+                    player2.replace(h.get(1), str + "-2");
+            }
+        }
+        
+        for (String str : player1.values()) {
+            vertexList.add(str);
+        }
             
+        for (String str : player2.values()) {
+            vertexList.add(str);
         }
-        
-        for (Vertex v : vertexList) {
-            System.out.println(v + "->" + v.getTo());
-            System.out.println(v + "<-" + v.getFrom());
-        }
-        
-        //player 1 events
-//        Vertex castle_1 = new Vertex("Castle-1");
-//        Vertex sweetroll_1 = new Vertex("Sweetroll-1");
-//        Vertex guard_1 = new Vertex("Guard-1");
-//        Vertex treasure_1 = new Vertex("Treasure-1");
-//
-//        //shared events
-//        Vertex dragon = new Vertex("Dragon");
-//
-//        //player 2 events
-//        Vertex guard_2 = new Vertex("Guard-2");
-//        Vertex romance_2 = new Vertex("Romance-2");
-//        Vertex castle_2 = new Vertex("Castle-2");
-//
-//        //add vertices to vertexList
-//        vertexList.add(castle_1);
-//        vertexList.add(sweetroll_1);
-//        vertexList.add(guard_1);
-//        vertexList.add(treasure_1);
-//
-//        vertexList.add(dragon);
-//
-//        vertexList.add(guard_2);
-//        vertexList.add(romance_2);
-//        vertexList.add(castle_2);
-//
-//        //player 1 u->v
-//        castle_1.addToList(sweetroll_1);
-//        castle_1.addToList(dragon);
-//
-//        sweetroll_1.addToList(guard_1);
-//        sweetroll_1.addFromList(castle_1);
-//
-//        guard_1.addFromList(sweetroll_1);
-//
-//        dragon.addToList(treasure_1);
-//        dragon.addFromList(castle_1);
-//
-//        treasure_1.addFromList(dragon);
-//
-//        //player 2 u->v
-//        guard_2.addToList(castle_1);
-//        guard_2.addToList(dragon);
-//
-//        castle_2.addFromList(guard_2);
-//
-//        dragon.addToList(romance_2);
-//        dragon.addFromList(guard_2);
-//
-//        romance_2.addFromList(dragon);
-        
-        Collections.sort(vertexList, new VertexFromSizeComparator());
                 
-        return vertexList;
+        TreeMap<String, Vertex> vertexList1 = new TreeMap<>();
+        for (String str : player1.values()) {
+            Vertex vertex = new Vertex(str);
+            vertexList1.put(str, vertex);
+        }
+        
+        TreeMap<String, Vertex> vertexList2 = new TreeMap<>();
+        for (String str : player2.values()) {
+            Vertex vertex = new Vertex(str);
+            vertexList2.put(str, vertex);
+        }
+        
+        TreeMap<String, Vertex> sharedVertices = new TreeMap<>();
+        for (String h : sharedQuests) {
+            Vertex vertex = new Vertex(h);
+            sharedVertices.put(h, vertex);
+        }
+        
+        for (ArrayList<String> s : g) {
+            if (vertexList1.containsKey(s.get(0)+"-1") && vertexList1.containsKey(s.get(1)+"-1")) {
+                
+                vertexList1.get(s.get(0)+"-1")
+                .addToList(vertexList1.get(s.get(1)+"-1"));
+                
+                vertexList1.get(s.get(1)+"-1")
+                .addFromList(vertexList1.get(s.get(0)+"-1"));
+            }
+        }
+        
+        for (ArrayList<String> s : g1) {
+            if (vertexList2.containsKey(s.get(0)+"-2") && vertexList2.containsKey(s.get(1)+"-2")) {
+                
+                vertexList2.get(s.get(0)+"-2")
+                .addToList(vertexList2.get(s.get(1)+"-2"));
+                
+                vertexList2.get(s.get(1)+"-2")
+                .addFromList(vertexList2.get(s.get(0)+"-2"));
+            }
+        }
+        
+        for (ArrayList<String> lst : g) {
+            if (sharedVertices.containsKey(lst.get(0))) {
+                sharedVertices.get(lst.get(0))
+                .addToList(vertexList1.get(lst.get(1)+"-1"));
+                
+                if (vertexList1.containsKey(lst.get(0)+"-1")) {
+                    vertexList1.get(lst.get(1)+"-1")
+                   .addFromList(sharedVertices.get(lst.get(0)));
+               }
+                    
+            }
+            if (sharedVertices.containsKey(lst.get(1))) {
+                sharedVertices.get(lst.get(1))
+                .addFromList(vertexList1.get(lst.get(0)+"-1"));
+                    
+                if (vertexList1.containsKey(lst.get(1)+"-1")) {
+                    vertexList1.get(lst.get(0)+"-1")
+                    .addToList(sharedVertices.get(lst.get(1)));
+                }
+            }
+        }
+        
+        for (ArrayList<String> lst : g1) {
+            if (sharedVertices.containsKey(lst.get(0))) {
+            
+                sharedVertices.get(lst.get(0))
+                .addToList(vertexList2.get(lst.get(1)+"-2"));
+                    
+                if (vertexList2.containsKey(lst.get(0)+"-2")) {
+                    vertexList2.get(lst.get(1)+"-2")
+                    .addFromList(sharedVertices.get(lst.get(0)));
+                }
+            }
+            if (sharedVertices.containsKey(lst.get(1))) {
+                sharedVertices.get(lst.get(1))
+                .addFromList(vertexList2.get(lst.get(0)+"-2"));
+                    
+                    
+                    if (vertexList2.containsKey(lst.get(1)+"-2")) {
+                    vertexList2.get(lst.get(0)+"-2")
+                    .addToList(sharedVertices.get(lst.get(1)));
+                }
+            }
+        }
+        
+        ArrayList<Vertex> finalArray = new ArrayList<>();
+        for (Vertex v : vertexList1.values()) {
+            finalArray.add(v);
+        }
+        for (Vertex v : vertexList2.values()) {
+            finalArray.add(v);
+        }
+        for (Vertex v : sharedVertices.values()) {
+            finalArray.add(v);
+        }
+
+        return finalArray;
     }
     
     public static String[] topologicalSort(Map<String, Vertex> G) {
@@ -217,7 +281,7 @@ class topologicalSort {
     }
 }
 
-class Vertex {
+class Vertex implements Comparable<Vertex> {
     private String name;
     private List<Vertex> to;
     private List<Vertex> from;
@@ -265,10 +329,16 @@ class Vertex {
     public void addToList(List<Vertex> vertex) {
         this.to.addAll(vertex);
     }
+    public void addToList(Set<Vertex> vertex) {
+        this.to.addAll(vertex);
+    }
     public void addFromList(Vertex vertex) {
         this.from.add(vertex);
     }
     public void addFromList(List<Vertex> vertex) {
+        this.from.addAll(vertex);
+    }
+    public void addFromList(Set<Vertex> vertex) {
         this.from.addAll(vertex);
     }
     public void setPre(int x) {
@@ -289,7 +359,18 @@ class Vertex {
     
     @Override
     public String toString() {
-        return this.name ;
+        return this.name;
+    }
+    
+    @Override
+    public int compareTo(Vertex v) {
+        if (this.to.size() > v.getFrom().size()) {
+            return 1;
+        } else if (this.to.size() == v.getFrom().size()) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }
 
