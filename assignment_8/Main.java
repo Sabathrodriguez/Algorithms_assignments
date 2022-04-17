@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) {
@@ -21,35 +22,58 @@ class Main {
         Main main = new Main();
 
         //TODO
-        int absV = -1;
-        int numConnections = -1;
-        int start = -1;
-        int end = -1;
+        Scanner scanner = new Scanner(System.in);
+        int absV = scanner.nextInt();
+        int numConnections = scanner.nextInt();
+        int start = scanner.nextInt();
+        int end = scanner.nextInt();
 
-        long[][] weights = main.createGraph(absV, numConnections);
+        long[][] weights = main.createGraph(absV, numConnections, scanner);
+
         long[] dist = new long[absV];
         int[] pred = new int[absV];
+
         main.dijkstrasMod(start, dist, pred, weights, end, absV);
 
-        //get path 
+        //output
         int current = end;
         ArrayList<String> tempList = new ArrayList<>();
         while (current != start) {
             tempList.add(main.translate(weights[pred[current]][current]));
             current = pred[current];
         }
-
         Collections.reverse(tempList);
-
         System.out.print(tempList.size() + " ");
+        String output = "";
         for (String str : tempList) {
-            System.out.print(str + " ");
+            output += str + " ";
         }
+        System.out.println(output.substring(0, output.length()-1));
     }
 
-    public long[][] createGraph(int absV, int numConnections) {
+    public long[][] createGraph(int absV, int numConnections, Scanner scanner) {
         //TODO
-        return new long[][] {{}};
+        long[][] w = new long[absV][absV];
+
+        while (numConnections-- > 0) {
+            int u = scanner.nextInt();
+            String dir = scanner.next();
+            int v = scanner.nextInt();
+
+            w[u][v] = translateToNum(dir);
+
+        }
+        return w;
+    }
+
+    public long translateToNum(String str) {
+        if (str.equals("right")) {
+            return 200000;
+        } else if (str.equals("straight")) {
+            return 300000;
+        } else {
+            return 500000;
+        }
     }
 
     public String translate(long weight) {
