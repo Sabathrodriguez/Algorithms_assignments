@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Scanner;
@@ -21,14 +20,13 @@ class Main {
         */
         Main main = new Main();
 
-        //TODO
         Scanner scanner = new Scanner(System.in);
         int absV = scanner.nextInt();
         int numConnections = scanner.nextInt();
         int start = scanner.nextInt();
         int end = scanner.nextInt();
 
-        long[][] weights = main.createGraph(absV, numConnections, scanner);
+        int[][] weights = main.createGraph(absV, numConnections, scanner);
 
         long[] dist = new long[absV];
         int[] pred = new int[absV];
@@ -38,7 +36,7 @@ class Main {
         //output
         int current = end;
         ArrayList<String> tempList = new ArrayList<>();
-        while (current != start) {
+        while (current != start && pred[current] != -1) {
             tempList.add(main.translate(weights[pred[current]][current]));
             current = pred[current];
         }
@@ -51,9 +49,9 @@ class Main {
         System.out.println(output.substring(0, output.length()-1));
     }
 
-    public long[][] createGraph(int absV, int numConnections, Scanner scanner) {
+    public int[][] createGraph(int absV, int numConnections, Scanner scanner) {
         //TODO
-        long[][] w = new long[absV][absV];
+        int[][] w = new int[absV][absV];
 
         while (numConnections-- > 0) {
             int u = scanner.nextInt();
@@ -66,27 +64,27 @@ class Main {
         return w;
     }
 
-    public long translateToNum(String str) {
+    public int translateToNum(String str) {
         if (str.equals("right")) {
             return 200000;
         } else if (str.equals("straight")) {
-            return 300000;
+            return 30000000;
         } else {
-            return 500000;
+            return 500000000;
         }
     }
 
     public String translate(long weight) {
         if (weight == 200000) {
             return "right";
-        } else if (weight == 300000) {
+        } else if (weight == 30000000) {
             return "straight";
-        } else if (weight == 500000) {
+        } else if (weight == 500000000) {
             return "left";
         }
         return "";
     }
-    public void dijkstrasMod(int start, long[] dist, int[] pred, long[][] w, int t, int absV) {
+    public void dijkstrasMod(int start, long[] dist, int[] pred, int[][] w, int t, int absV) {
         ISSSP(start, dist, pred);
 
         PriorityQueue<Long> pq = new PriorityQueue<>();
@@ -112,7 +110,7 @@ class Main {
                         }
                     }
                 }
-            } else if (z%300000 < 100000) {
+            } else if (z%30000000 < 10000000) {
                 long temp = z%300000;                
                 for (int i = 0; i < absV; i++) {                    
                     if (w[(int)temp][(int)i] > 0) {
@@ -130,7 +128,7 @@ class Main {
                         }
                     }
                 }
-            } else if (z%500000 < 100000) {
+            } else if (z%500000000 < 100000000) {
                 long temp = z%500000;                
                 for (int i = 0; i < absV; i++) {                    
                     if (w[(int)temp][(int)i] > 0) {
